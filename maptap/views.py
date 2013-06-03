@@ -5,8 +5,15 @@ from django.views import generic
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.core import serializers
 
 from maptap.models import Annotation
+
+# Returns an XML representation of the current data set.
+# Currently no login required.
+def pull(request):
+	return HttpResponse(serializers.serialize("xml", 
+		Annotation.objects.all()))
 
 @login_required(login_url='/writing/login/')
 def IndexView(request):

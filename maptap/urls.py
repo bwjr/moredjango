@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from maptap import views
 
 urlpatterns = patterns('',
+    url(r'^pull/$', views.pull, name = 'pull'),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'writing/login.html'}, name = 'login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page' : '/writing/'}, name = 'logout'),
     url(r'^$', views.IndexView, name='index'),
