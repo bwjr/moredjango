@@ -6,6 +6,7 @@ class Annotation(models.Model):
     by_user = models.ForeignKey(User, related_name = 'by_user')
     latitude = models.FloatField()
     longitude = models.FloatField()
+    name = models.CharField(max_length = 1000)
     comment = models.TextField()
     upVotes = models.IntegerField(default = 0)
     downVotes = models.IntegerField(default = 0)
