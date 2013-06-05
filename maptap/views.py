@@ -15,6 +15,13 @@ def pull(request):
 	return HttpResponse(serializers.serialize("xml", 
 		Annotation.objects.all()))
 
+def push(request):
+    if request.method == 'POST':
+        form = AnnotationForm(request.POST, instance = Paper(by_user = request.user))
+        if form.is_valid():
+            form.save()
+    return HttpResponse()
+
 @login_required(login_url='/writing/login/')
 def IndexView(request):
 	if request.method == 'POST':

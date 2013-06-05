@@ -15,7 +15,7 @@ class Annotation(models.Model):
     def __unicode__(self):
         return self.comment
 
-#class PaperForm(ModelForm):
-#    class Meta:
-#        model = Paper
-#        exclude = ['by_user']
+class AnnotationForm(ModelForm):
+    class Meta:
+        model = Annotation
+        exclude = ['by_user']
