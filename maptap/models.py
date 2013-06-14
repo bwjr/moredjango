@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-#from django.forms import ModelForm
+from django.forms import ModelForm
 
 class Annotation(models.Model):
-    by_user = models.ForeignKey(User, related_name = 'by_user')
+    by_user = models.ForeignKey(User, related_name = 'by_user', default =1)
     latitude = models.FloatField()
     longitude = models.FloatField()
     title = models.CharField(max_length = 1000)

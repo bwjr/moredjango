@@ -9,11 +9,17 @@ from django.core import serializers
 
 from maptap.models import Annotation
 
+import random
+
 # Returns an XML representation of the current data set.
 # Currently no login required.
 def pull(request):
+	r = random.Random()
+	i = random.Random()
+	r = r.randint(0, 5000)
+	i = i.randint(1, 10)
 	return HttpResponse(serializers.serialize("xml", 
-		Annotation.objects.all()))
+		Annotation.objects.filter(pk__gt = r-i).filter(pk__lt = r+i), content_type = 'text/xml'))
 
 def push(request):
     if request.method == 'POST':
