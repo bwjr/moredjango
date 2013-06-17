@@ -18,4 +18,4 @@ class Annotation(models.Model):
 class AnnotationForm(ModelForm):
     class Meta:
         model = Annotation
-        exclude = ['by_user']
+        exclude = ['by_user', 'upVotes', 'downVotes']

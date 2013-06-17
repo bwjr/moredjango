@@ -1,31 +1,40 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
-from django.views import generic
+#from django.views import generic
 from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core import serializers
 
-from maptap.models import Annotation
+from maptap.models import Annotation, AnnotationForm
 
 import random
 
 # Returns an XML representation of the current data set.
-# Currently no login required.
+# Currently no login required. Uses default user.
+# Returns random set of objects from database.
 def pull(request):
 	r = random.Random()
 	i = random.Random()
 	r = r.randint(0, 5000)
 	i = i.randint(1, 10)
 	return HttpResponse(serializers.serialize("xml", 
-		Annotation.objects.filter(pk__gt = r-i).filter(pk__lt = r+i), content_type = 'text/xml'))
+		Annotation.objects.filter(pk__gt = r-i).filter(pk__lt = r+i),
+                content_type = 'text/xml'))
 
+@csrf_exempt
 def push(request):
     if request.method == 'POST':
-        form = AnnotationForm(request.POST, instance = Paper(by_user = request.user))
+        form = AnnotationForm(request.POST)
+##        form = AnnotationForm({'latitude' : 1.0,
+##                               'longitude' : 1.0,
+##                               'title' : 't',
+##                               'comment' : 'a',})
         if form.is_valid():
             form.save()
+            return HttpResponse(status=210)
     return HttpResponse()
 
 @login_required(login_url='/writing/login/')
@@ -57,10 +66,11 @@ def add_user(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
 	    form.save()
-	    usr = authenticate(username = request.POST['username'], password = 				request.POST['password1'])
+	    usr = authenticate(username = request.POST['username'], password = 	request.POST['password1'])
 	    login(request, usr)
             return HttpResponseRedirect('/writing/')
     else:
         form = UserCreationForm()
 
     return render(request, 'writing/add_user.html', {'form': form})
+
