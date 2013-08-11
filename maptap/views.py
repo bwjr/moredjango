@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core import serializers
+from django.db.models import Q
 
 from maptap.models import Annotation, AnnotationForm
 
@@ -16,26 +17,27 @@ import random
 # Currently no login required. Uses default user.
 # Returns random set of objects from database.
 def pull(request):
-	r = random.Random()
-	i = random.Random()
-	r = r.randint(0, 5000)
-	i = i.randint(1, 10)
 	return HttpResponse(serializers.serialize("xml", 
-		Annotation.objects.filter(pk__gt = r-i).filter(pk__lt = r+i),
+		Annotation.objects.all(),
                 content_type = 'text/xml'))
 
 @csrf_exempt
 def push(request):
     if request.method == 'POST':
         form = AnnotationForm(request.POST)
-##        form = AnnotationForm({'latitude' : 1.0,
-##                               'longitude' : 1.0,
-##                               'title' : 't',
-##                               'comment' : 'a',})
         if form.is_valid():
             form.save()
             return HttpResponse(status=210)
     return HttpResponse()
+
+# Returns an XML representation of the current data set.
+# Currently no login required. Uses default user.
+# Returns random set of objects from database.
+def pull_search(request):
+	return HttpResponse(serializers.serialize("xml", 
+		Annotation.objects.filter(Q(title__contains=request.GET['term'])
+                        | Q(comment__contains=request.GET['term'])),
+                content_type = 'text/xml'))
 
 @login_required(login_url='/writing/login/')
 def IndexView(request):
